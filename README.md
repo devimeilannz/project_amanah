@@ -143,3 +143,10 @@ tests/Feature/Auth     Test flow utama
 - Pengecekan "Sudah Terdaftar" tersedia dua lapis: real-time (`check-availability`) dan final (validasi unique saat register).
 - Nomor WA boleh ditulis `812-3456-7890`, `0812…`, atau `+62 812…`; disimpan sebagai `+6281234567890`.
 - Kirim `otp` sebagai **string** agar angka 0 di depan tidak hilang.
+
+## Bukti Pengujian
+
+### Database
+![Daftar tabel](docs/screenshot/db-tabel.png)
+
+
