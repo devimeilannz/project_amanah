@@ -149,3 +149,6 @@ erDiagram
 DELETE FROM otp_codes WHERE expires_at < NOW() - INTERVAL 1 DAY;
 DELETE FROM password_reset_sessions WHERE expires_at < NOW() - INTERVAL 1 DAY;
 ```
+
+### Database
+![Daftar tabel](docs/screenshot/db-tabel.png)
