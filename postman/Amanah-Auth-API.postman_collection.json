@@ -1,0 +1,1911 @@
+{
+  "info": {
+    "name": "Amanah Auth API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Jalankan berurutan. Set OTP_EXPOSE_IN_RESPONSE=true di .env agar variabel {{otp}} terisi otomatis."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "otp",
+      "value": ""
+    },
+    {
+      "key": "reset_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "description": "Buat akun baru (Flow Register). Password di-hash (bcrypt). Nomor WA dinormalisasi ke format +62. Langsung mengembalikan token.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"password\": \"Secret123!\",\n  \"password_confirmation\": \"Secret123!\",\n  \"terms_accepted\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.access_token) pm.collectionVariables.set('token', j.data.access_token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "201 - Registrasi berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Buat akun baru (Flow Register). Password di-hash (bcrypt). Nomor WA dinormalisasi ke format +62. Langsung mengembalikan token.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"password\": \"Secret123!\",\n  \"password_confirmation\": \"Secret123!\",\n  \"terms_accepted\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Registrasi berhasil",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Registrasi berhasil.\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi.santoso@gmail.com\",\n      \"whatsapp_number\": \"+6281234567890\",\n      \"email_verified\": false,\n      \"whatsapp_verified\": false,\n      \"created_at\": \"2026-10-07T10:00:00+00:00\"\n    },\n    \"access_token\": \"1|Xk3...plainTextToken\",\n    \"token_type\": \"Bearer\",\n    \"expires_at\": \"2026-10-08T10:00:00+00:00\"\n  }\n}"
+            },
+            {
+              "name": "422 - Validasi gagal / email atau WA sudah terdaftar",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Buat akun baru (Flow Register). Password di-hash (bcrypt). Nomor WA dinormalisasi ke format +62. Langsung mengembalikan token.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"password\": \"Secret123!\",\n  \"password_confirmation\": \"Secret123!\",\n  \"terms_accepted\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Validasi gagal / email atau WA sudah terdaftar",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Data yang dikirim tidak valid.\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"errors\": {\n    \"email\": [\n      \"Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.\"\n    ],\n    \"whatsapp_number\": [\n      \"Nomor WhatsApp ini sudah terdaftar di akun aktif.\"\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cek Ketersediaan Email/WA",
+          "request": {
+            "method": "POST",
+            "description": "Validasi real-time label 'Sudah Terdaftar' pada form register. Kirim salah satu atau keduanya.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/check-availability",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "check-availability"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+6281234567890\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - OK",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Validasi real-time label 'Sudah Terdaftar' pada form register. Kirim salah satu atau keduanya.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/check-availability",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "check-availability"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+6281234567890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"OK\",\n  \"data\": {\n    \"email\": {\n      \"available\": false\n    },\n    \"whatsapp_number\": {\n      \"available\": true\n    }\n  }\n}"
+            },
+            {
+              "name": "422 - Validasi gagal",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Validasi real-time label 'Sudah Terdaftar' pada form register. Kirim salah satu atau keduanya.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/check-availability",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "check-availability"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"whatsapp_number\": \"+6281234567890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Validasi gagal",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Data yang dikirim tidak valid.\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"errors\": {\n    \"field\": [\n      \"Pesan error.\"\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Login Email",
+      "item": [
+        {
+          "name": "Login Email & Sandi",
+          "request": {
+            "method": "POST",
+            "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.access_token) pm.collectionVariables.set('token', j.data.access_token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - Login berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Login berhasil",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login berhasil.\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi.santoso@gmail.com\",\n      \"whatsapp_number\": \"+6281234567890\",\n      \"email_verified\": false,\n      \"whatsapp_verified\": false,\n      \"created_at\": \"2026-10-07T10:00:00+00:00\"\n    },\n    \"access_token\": \"1|Xk3...plainTextToken\",\n    \"token_type\": \"Bearer\",\n    \"expires_at\": \"2026-10-08T10:00:00+00:00\"\n  }\n}"
+            },
+            {
+              "name": "401 - Kredensial salah",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Kredensial salah",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Kombinasi email atau kata sandi tidak cocok. Silakan periksa kembali atau reset sandi Anda.\",\n  \"code\": \"AUTH_FAILED\",\n  \"remaining_attempts\": 2\n}"
+            },
+            {
+              "name": "422 - Validasi gagal",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Validasi gagal",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Data yang dikirim tidak valid.\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"errors\": {\n    \"field\": [\n      \"Pesan error.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "423 - Akun terkunci sementara",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Akun terkunci sementara",
+              "code": 423,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Akun dikunci sementara karena terlalu banyak percobaan gagal. Coba lagi nanti atau reset kata sandi.\",\n  \"code\": \"ACCOUNT_LOCKED\",\n  \"retry_after\": 870\n}"
+            },
+            {
+              "name": "429 - Rate limit",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"budi.santoso@gmail.com\",\n  \"password\": \"Secret123!\",\n  \"remember\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Rate limit",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Terlalu banyak permintaan. Silakan coba lagi nanti.\",\n  \"code\": \"TOO_MANY_REQUESTS\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Login WhatsApp",
+      "item": [
+        {
+          "name": "Kirim OTP WhatsApp",
+          "request": {
+            "method": "POST",
+            "description": "Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login/whatsapp/request-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                "whatsapp",
+                "request-otp"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.debug_otp) pm.collectionVariables.set('otp', j.data.debug_otp);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - OTP terkirim",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/request-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "request-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OTP terkirim",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Kode OTP telah dikirim ke WhatsApp Anda.\",\n  \"data\": {\n    \"channel\": \"whatsapp\",\n    \"destination\": \"+62812****7890\",\n    \"expires_in\": 300,\n    \"resend_available_in\": 60,\n    \"debug_otp\": \"482910\"\n  }\n}"
+            },
+            {
+              "name": "404 - Nomor belum terdaftar",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/request-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "request-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Nomor belum terdaftar",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Nomor WhatsApp belum terdaftar. Silakan daftar terlebih dahulu.\",\n  \"code\": \"USER_NOT_FOUND\"\n}"
+            },
+            {
+              "name": "422 - Validasi gagal",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/request-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "request-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Validasi gagal",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Data yang dikirim tidak valid.\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"errors\": {\n    \"field\": [\n      \"Pesan error.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "429 - Cooldown kirim ulang / rate limit",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/request-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "request-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Cooldown kirim ulang / rate limit",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Mohon tunggu 42 detik sebelum meminta kode baru.\",\n  \"code\": \"OTP_COOLDOWN\",\n  \"retry_after\": 42\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verifikasi OTP WhatsApp",
+          "request": {
+            "method": "POST",
+            "description": "Verifikasi OTP lalu login. OTP sekali pakai; maks 5 percobaan salah. Kirim otp sebagai string (jaga angka 0 di depan).",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login/whatsapp/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                "whatsapp",
+                "verify-otp"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.access_token) pm.collectionVariables.set('token', j.data.access_token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - Login berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP lalu login. OTP sekali pakai; maks 5 percobaan salah. Kirim otp sebagai string (jaga angka 0 di depan).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Login berhasil",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login berhasil.\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi.santoso@gmail.com\",\n      \"whatsapp_number\": \"+6281234567890\",\n      \"email_verified\": false,\n      \"whatsapp_verified\": false,\n      \"created_at\": \"2026-10-07T10:00:00+00:00\"\n    },\n    \"access_token\": \"1|Xk3...plainTextToken\",\n    \"token_type\": \"Bearer\",\n    \"expires_at\": \"2026-10-08T10:00:00+00:00\"\n  }\n}"
+            },
+            {
+              "name": "422 - OTP salah / kedaluwarsa / sudah dipakai",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP lalu login. OTP sekali pakai; maks 5 percobaan salah. Kirim otp sebagai string (jaga angka 0 di depan).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OTP salah / kedaluwarsa / sudah dipakai",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Kode OTP salah. Sisa percobaan: 4.\",\n  \"code\": \"OTP_INVALID\",\n  \"remaining_attempts\": 4\n}"
+            },
+            {
+              "name": "429 - Percobaan melebihi batas",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP lalu login. OTP sekali pakai; maks 5 percobaan salah. Kirim otp sebagai string (jaga angka 0 di depan).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/login/whatsapp/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    "whatsapp",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"whatsapp_number\": \"+62 812-3456-7890\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Percobaan melebihi batas",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Terlalu banyak percobaan salah. Silakan minta kode baru.\",\n  \"code\": \"OTP_ATTEMPTS_EXCEEDED\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lupa Password",
+      "item": [
+        {
+          "name": "1. Kirim OTP Lupa Password",
+          "request": {
+            "method": "POST",
+            "description": "Kirim OTP via channel email atau whatsapp. Respons selalu 200 walau akun tidak ada (anti user-enumeration).",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.debug_otp) pm.collectionVariables.set('otp', j.data.debug_otp);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - Diproses",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP via channel email atau whatsapp. Respons selalu 200 walau akun tidak ada (anti user-enumeration).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Diproses",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Jika akun terdaftar, kode OTP telah dikirim.\",\n  \"data\": {\n    \"channel\": \"email\",\n    \"destination\": \"bud***@gmail.com\",\n    \"expires_in\": 300,\n    \"resend_available_in\": 60,\n    \"debug_otp\": \"482910\"\n  }\n}"
+            },
+            {
+              "name": "422 - Validasi gagal",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP via channel email atau whatsapp. Respons selalu 200 walau akun tidak ada (anti user-enumeration).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Validasi gagal",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Data yang dikirim tidak valid.\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"errors\": {\n    \"field\": [\n      \"Pesan error.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "429 - Cooldown / rate limit",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Kirim OTP via channel email atau whatsapp. Respons selalu 200 walau akun tidak ada (anti user-enumeration).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Cooldown / rate limit",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Mohon tunggu 42 detik sebelum meminta kode baru.\",\n  \"code\": \"OTP_COOLDOWN\",\n  \"retry_after\": 42\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Verifikasi OTP Lupa Password",
+          "request": {
+            "method": "POST",
+            "description": "Verifikasi OTP 6 digit => reset_token sekali pakai (berlaku 10 menit).",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password",
+                "verify-otp"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.reset_token) pm.collectionVariables.set('reset_token', j.data.reset_token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - OTP valid",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP 6 digit => reset_token sekali pakai (berlaku 10 menit).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OTP valid",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Verifikasi berhasil. Silakan atur kata sandi baru.\",\n  \"data\": {\n    \"reset_token\": \"q9Zr...64char\",\n    \"expires_in\": 600\n  }\n}"
+            },
+            {
+              "name": "422 - OTP salah / kedaluwarsa",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP 6 digit => reset_token sekali pakai (berlaku 10 menit).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OTP salah / kedaluwarsa",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Kode OTP sudah kedaluwarsa. Silakan kirim ulang kode.\",\n  \"code\": \"OTP_EXPIRED\"\n}"
+            },
+            {
+              "name": "429 - Percobaan melebihi batas",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Verifikasi OTP 6 digit => reset_token sekali pakai (berlaku 10 menit).",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password/verify-otp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password",
+                    "verify-otp"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"email\": \"budi.santoso@gmail.com\",\n  \"otp\": \"{{otp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Percobaan melebihi batas",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Terlalu banyak percobaan salah. Silakan minta kode baru.\",\n  \"code\": \"OTP_ATTEMPTS_EXCEEDED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Atur Kata Sandi Baru",
+          "request": {
+            "method": "POST",
+            "description": "Set kata sandi baru. Semua token lama dicabut; mengembalikan token baru (login otomatis 'Simpan Kata Sandi & Masuk').",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reset_token\": \"{{reset_token}}\",\n  \"password\": \"NewSecret456!\",\n  \"password_confirmation\": \"NewSecret456!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const j = pm.response.json(); if (j.data && j.data.access_token) pm.collectionVariables.set('token', j.data.access_token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - Berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Set kata sandi baru. Semua token lama dicabut; mengembalikan token baru (login otomatis 'Simpan Kata Sandi & Masuk').",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/reset-password",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reset_token\": \"{{reset_token}}\",\n  \"password\": \"NewSecret456!\",\n  \"password_confirmation\": \"NewSecret456!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Berhasil",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Kata sandi berhasil diperbarui.\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi.santoso@gmail.com\",\n      \"whatsapp_number\": \"+6281234567890\",\n      \"email_verified\": false,\n      \"whatsapp_verified\": false,\n      \"created_at\": \"2026-10-07T10:00:00+00:00\"\n    },\n    \"access_token\": \"1|Xk3...plainTextToken\",\n    \"token_type\": \"Bearer\",\n    \"expires_at\": \"2026-10-08T10:00:00+00:00\"\n  }\n}"
+            },
+            {
+              "name": "422 - Token tidak valid / sandi lemah",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Set kata sandi baru. Semua token lama dicabut; mengembalikan token baru (login otomatis 'Simpan Kata Sandi & Masuk').",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/reset-password",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reset_token\": \"{{reset_token}}\",\n  \"password\": \"NewSecret456!\",\n  \"password_confirmation\": \"NewSecret456!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Token tidak valid / sandi lemah",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Token reset tidak valid atau sudah kedaluwarsa. Ulangi proses lupa kata sandi.\",\n  \"code\": \"RESET_TOKEN_INVALID\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Akun",
+      "item": [
+        {
+          "name": "Profil Saya",
+          "request": {
+            "method": "GET",
+            "description": "Data user yang sedang login.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - OK",
+              "originalRequest": {
+                "method": "GET",
+                "description": "Data user yang sedang login.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"OK\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi.santoso@gmail.com\",\n      \"whatsapp_number\": \"+6281234567890\",\n      \"email_verified\": false,\n      \"whatsapp_verified\": false,\n      \"created_at\": \"2026-10-07T10:00:00+00:00\"\n    }\n  }\n}"
+            },
+            {
+              "name": "401 - Token tidak ada / tidak valid",
+              "originalRequest": {
+                "method": "GET",
+                "description": "Data user yang sedang login.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Token tidak ada / tidak valid",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Tidak terautentikasi. Silakan login terlebih dahulu.\",\n  \"code\": \"UNAUTHENTICATED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "description": "Cabut token yang sedang dipakai.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 2xx', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 - OK",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Cabut token yang sedang dipakai.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/logout",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logout berhasil.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 - Tidak terautentikasi",
+              "originalRequest": {
+                "method": "POST",
+                "description": "Cabut token yang sedang dipakai.",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/logout",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "status": "Tidak terautentikasi",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Tidak terautentikasi. Silakan login terlebih dahulu.\",\n  \"code\": \"UNAUTHENTICATED\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

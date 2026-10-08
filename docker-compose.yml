@@ -1,0 +1,13 @@
+# Hanya database (aplikasi dijalankan lokal dengan `php artisan serve`)
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: amanah_mysql
+    restart: unless-stopped
+    ports: ["3306:3306"]
+    environment:
+      MYSQL_DATABASE: amanah_auth
+      MYSQL_ROOT_PASSWORD: secret
+    volumes: [mysql_data:/var/lib/mysql]
+volumes:
+  mysql_data:

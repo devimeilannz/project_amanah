@@ -1,0 +1,519 @@
+openapi: 3.0.3
+info:
+  title: Amanah Auth API
+  version: 1.0.0
+  description: 'REST API autentikasi Amanah: Register, Login Email, Login WhatsApp + OTP, Lupa Password + OTP.
+
+
+    Format sukses: `{success, message, data}`. Format error: `{success:false, message, code, errors?}`.'
+servers:
+- url: http://localhost:8000/api/v1
+  description: Local
+tags:
+- name: Register
+- name: Login Email
+- name: Login WhatsApp
+- name: Lupa Password
+- name: Akun
+paths:
+  /auth/register:
+    post:
+      tags:
+      - Register
+      summary: Register
+      description: Buat akun baru (Flow Register). Password di-hash (bcrypt). Nomor WA dinormalisasi ke format +62. Langsung
+        mengembalikan token.
+      responses:
+        '201':
+          description: Registrasi berhasil
+          content:
+            application/json:
+              example:
+                success: true
+                message: Registrasi berhasil.
+                data: &id001
+                  user: &id003
+                    id: 1
+                    name: Budi Santoso
+                    email: budi.santoso@gmail.com
+                    whatsapp_number: '+6281234567890'
+                    email_verified: false
+                    whatsapp_verified: false
+                    created_at: '2026-10-07T10:00:00+00:00'
+                  access_token: 1|Xk3...plainTextToken
+                  token_type: Bearer
+                  expires_at: '2026-10-08T10:00:00+00:00'
+        '422':
+          description: Validasi gagal / email atau WA sudah terdaftar
+          content:
+            application/json:
+              example:
+                success: false
+                message: Data yang dikirim tidak valid.
+                code: VALIDATION_ERROR
+                errors:
+                  email:
+                  - Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.
+                  whatsapp_number:
+                  - Nomor WhatsApp ini sudah terdaftar di akun aktif.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Budi Santoso
+                email:
+                  type: string
+                  example: budi.santoso@gmail.com
+                whatsapp_number:
+                  type: string
+                  example: +62 812-3456-7890
+                password:
+                  type: string
+                  example: Secret123!
+                password_confirmation:
+                  type: string
+                  example: Secret123!
+                terms_accepted:
+                  type: boolean
+                  example: true
+            example:
+              name: Budi Santoso
+              email: budi.santoso@gmail.com
+              whatsapp_number: +62 812-3456-7890
+              password: Secret123!
+              password_confirmation: Secret123!
+              terms_accepted: true
+      security: []
+  /auth/check-availability:
+    post:
+      tags:
+      - Register
+      summary: Cek Ketersediaan Email/WA
+      description: Validasi real-time label 'Sudah Terdaftar' pada form register. Kirim salah satu atau keduanya.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                success: true
+                message: OK
+                data:
+                  email:
+                    available: false
+                  whatsapp_number:
+                    available: true
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              example: &id002
+                success: false
+                message: Data yang dikirim tidak valid.
+                code: VALIDATION_ERROR
+                errors:
+                  field:
+                  - Pesan error.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: budi.santoso@gmail.com
+                whatsapp_number:
+                  type: string
+                  example: '+6281234567890'
+            example:
+              email: budi.santoso@gmail.com
+              whatsapp_number: '+6281234567890'
+      security: []
+  /auth/login:
+    post:
+      tags:
+      - Login Email
+      summary: Login Email & Sandi
+      description: Login email + kata sandi. Gagal => 401 dengan remaining_attempts ('Sisa 2x'). Setelah 5 kali gagal akun
+        dikunci 15 menit (423). remember=true => token berlaku 30 hari (default 24 jam).
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              example:
+                success: true
+                message: Login berhasil.
+                data: *id001
+        '401':
+          description: Kredensial salah
+          content:
+            application/json:
+              example:
+                success: false
+                message: Kombinasi email atau kata sandi tidak cocok. Silakan periksa kembali atau reset sandi Anda.
+                code: AUTH_FAILED
+                remaining_attempts: 2
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              example: *id002
+        '423':
+          description: Akun terkunci sementara
+          content:
+            application/json:
+              example:
+                success: false
+                message: Akun dikunci sementara karena terlalu banyak percobaan gagal. Coba lagi nanti atau reset kata sandi.
+                code: ACCOUNT_LOCKED
+                retry_after: 870
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              example:
+                success: false
+                message: Terlalu banyak permintaan. Silakan coba lagi nanti.
+                code: TOO_MANY_REQUESTS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: budi.santoso@gmail.com
+                password:
+                  type: string
+                  example: Secret123!
+                remember:
+                  type: boolean
+                  example: true
+            example:
+              email: budi.santoso@gmail.com
+              password: Secret123!
+              remember: true
+      security: []
+  /auth/login/whatsapp/request-otp:
+    post:
+      tags:
+      - Login WhatsApp
+      summary: Kirim OTP WhatsApp
+      description: Kirim OTP 6 digit ke WhatsApp (berlaku 5 menit, jeda kirim ulang 60 detik). Field debug_otp hanya muncul
+        bila OTP_EXPOSE_IN_RESPONSE=true & bukan production.
+      responses:
+        '200':
+          description: OTP terkirim
+          content:
+            application/json:
+              example:
+                success: true
+                message: Kode OTP telah dikirim ke WhatsApp Anda.
+                data:
+                  channel: whatsapp
+                  destination: +62812****7890
+                  expires_in: 300
+                  resend_available_in: 60
+                  debug_otp: '482910'
+        '404':
+          description: Nomor belum terdaftar
+          content:
+            application/json:
+              example:
+                success: false
+                message: Nomor WhatsApp belum terdaftar. Silakan daftar terlebih dahulu.
+                code: USER_NOT_FOUND
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              example: *id002
+        '429':
+          description: Cooldown kirim ulang / rate limit
+          content:
+            application/json:
+              example:
+                success: false
+                message: Mohon tunggu 42 detik sebelum meminta kode baru.
+                code: OTP_COOLDOWN
+                retry_after: 42
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                whatsapp_number:
+                  type: string
+                  example: +62 812-3456-7890
+            example:
+              whatsapp_number: +62 812-3456-7890
+      security: []
+  /auth/login/whatsapp/verify-otp:
+    post:
+      tags:
+      - Login WhatsApp
+      summary: Verifikasi OTP WhatsApp
+      description: Verifikasi OTP lalu login. OTP sekali pakai; maks 5 percobaan salah. Kirim otp sebagai string (jaga angka
+        0 di depan).
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              example:
+                success: true
+                message: Login berhasil.
+                data: *id001
+        '422':
+          description: OTP salah / kedaluwarsa / sudah dipakai
+          content:
+            application/json:
+              example:
+                success: false
+                message: 'Kode OTP salah. Sisa percobaan: 4.'
+                code: OTP_INVALID
+                remaining_attempts: 4
+        '429':
+          description: Percobaan melebihi batas
+          content:
+            application/json:
+              example:
+                success: false
+                message: Terlalu banyak percobaan salah. Silakan minta kode baru.
+                code: OTP_ATTEMPTS_EXCEEDED
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                whatsapp_number:
+                  type: string
+                  example: +62 812-3456-7890
+                otp:
+                  type: string
+                  example: '{{otp}}'
+            example:
+              whatsapp_number: +62 812-3456-7890
+              otp: '{{otp}}'
+      security: []
+  /auth/forgot-password:
+    post:
+      tags:
+      - Lupa Password
+      summary: 1. Kirim OTP Lupa Password
+      description: Kirim OTP via channel email atau whatsapp. Respons selalu 200 walau akun tidak ada (anti user-enumeration).
+      responses:
+        '200':
+          description: Diproses
+          content:
+            application/json:
+              example:
+                success: true
+                message: Jika akun terdaftar, kode OTP telah dikirim.
+                data:
+                  channel: email
+                  destination: bud***@gmail.com
+                  expires_in: 300
+                  resend_available_in: 60
+                  debug_otp: '482910'
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              example: *id002
+        '429':
+          description: Cooldown / rate limit
+          content:
+            application/json:
+              example:
+                success: false
+                message: Mohon tunggu 42 detik sebelum meminta kode baru.
+                code: OTP_COOLDOWN
+                retry_after: 42
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  example: email
+                email:
+                  type: string
+                  example: budi.santoso@gmail.com
+            example:
+              channel: email
+              email: budi.santoso@gmail.com
+      security: []
+  /auth/forgot-password/verify-otp:
+    post:
+      tags:
+      - Lupa Password
+      summary: 2. Verifikasi OTP Lupa Password
+      description: Verifikasi OTP 6 digit => reset_token sekali pakai (berlaku 10 menit).
+      responses:
+        '200':
+          description: OTP valid
+          content:
+            application/json:
+              example:
+                success: true
+                message: Verifikasi berhasil. Silakan atur kata sandi baru.
+                data:
+                  reset_token: q9Zr...64char
+                  expires_in: 600
+        '422':
+          description: OTP salah / kedaluwarsa
+          content:
+            application/json:
+              example:
+                success: false
+                message: Kode OTP sudah kedaluwarsa. Silakan kirim ulang kode.
+                code: OTP_EXPIRED
+        '429':
+          description: Percobaan melebihi batas
+          content:
+            application/json:
+              example:
+                success: false
+                message: Terlalu banyak percobaan salah. Silakan minta kode baru.
+                code: OTP_ATTEMPTS_EXCEEDED
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  example: email
+                email:
+                  type: string
+                  example: budi.santoso@gmail.com
+                otp:
+                  type: string
+                  example: '{{otp}}'
+            example:
+              channel: email
+              email: budi.santoso@gmail.com
+              otp: '{{otp}}'
+      security: []
+  /auth/reset-password:
+    post:
+      tags:
+      - Lupa Password
+      summary: 3. Atur Kata Sandi Baru
+      description: Set kata sandi baru. Semua token lama dicabut; mengembalikan token baru (login otomatis 'Simpan Kata Sandi
+        & Masuk').
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              example:
+                success: true
+                message: Kata sandi berhasil diperbarui.
+                data: *id001
+        '422':
+          description: Token tidak valid / sandi lemah
+          content:
+            application/json:
+              example:
+                success: false
+                message: Token reset tidak valid atau sudah kedaluwarsa. Ulangi proses lupa kata sandi.
+                code: RESET_TOKEN_INVALID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reset_token:
+                  type: string
+                  example: '{{reset_token}}'
+                password:
+                  type: string
+                  example: NewSecret456!
+                password_confirmation:
+                  type: string
+                  example: NewSecret456!
+            example:
+              reset_token: '{{reset_token}}'
+              password: NewSecret456!
+              password_confirmation: NewSecret456!
+      security: []
+  /auth/me:
+    get:
+      tags:
+      - Akun
+      summary: Profil Saya
+      description: Data user yang sedang login.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                success: true
+                message: OK
+                data:
+                  user: *id003
+        '401':
+          description: Token tidak ada / tidak valid
+          content:
+            application/json:
+              example:
+                success: false
+                message: Tidak terautentikasi. Silakan login terlebih dahulu.
+                code: UNAUTHENTICATED
+      security:
+      - bearerAuth: []
+  /auth/logout:
+    post:
+      tags:
+      - Akun
+      summary: Logout
+      description: Cabut token yang sedang dipakai.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                success: true
+                message: Logout berhasil.
+                data: null
+        '401':
+          description: Tidak terautentikasi
+          content:
+            application/json:
+              example:
+                success: false
+                message: Tidak terautentikasi. Silakan login terlebih dahulu.
+                code: UNAUTHENTICATED
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Token Sanctum dari endpoint login/register.
